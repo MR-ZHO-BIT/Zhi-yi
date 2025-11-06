@@ -240,7 +240,7 @@
             <button class="btn" id="blessingBtn">点击接收祝福</button>
             <p class="footer">专属于你的祝福程序</p >
             <!-- 音乐元素（已改为相对路径） -->
-            <audio id="bgMusic" loop>
+            <audio id="bgMusic" loop preload="auto">
                 <source src="missyouhani.mp3" type="audio/mpeg">
                 您的浏览器不支持音频播放
             </audio>
@@ -374,4 +374,5 @@
         blessingBtn.addEventListener('click', startBlessings);
     </script>
 </body>
+
 </html>
