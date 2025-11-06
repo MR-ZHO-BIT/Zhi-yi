@@ -239,7 +239,7 @@
             <p class="message">点击下面的按钮，接收我的祝福与音乐</p >
             <button class="btn" id="blessingBtn">点击接收祝福</button>
             <p class="footer">专属于你的祝福程序</p >
-            <!-- 音乐元素（已改为相对路径） -->
+            <!-- 音乐元素（相对路径） -->
             <audio id="bgMusic" loop preload="auto">
                 <source src="missyouhani.mp3" type="audio/mpeg">
                 您的浏览器不支持音频播放
@@ -301,6 +301,7 @@
             progressBar.classList.add('loaded');
         });
 
+        // 持续1分36秒、初始4个弹窗、每3秒随机1-3个弹窗
         function startBlessings() {
             if (!musicPlayed) {
                 bgMusic.play().catch(err => {
@@ -311,18 +312,24 @@
             }
 
             blessingBtn.disabled = true;
-            for (let i = 0; i < 3; i++) {
+            // 初始生成4个随机弹窗
+            for (let i = 0; i < 4; i++) {
                 createRandomBlessing();
             }
+            // 每3秒随机生成1-3个新弹窗
             interval = setInterval(() => {
-                createRandomBlessing();
-                if (Math.random() > 0.7) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        blessingBtn.disabled = false;
-                    }, 2000);
+                const randomPopupNum = Math.floor(Math.random() * 3) + 1;
+                for (let i = 0; i < randomPopupNum; i++) {
+                    createRandomBlessing();
                 }
-            }, 600);
+            }, 3000);
+            // 1分36秒后停止弹窗
+            setTimeout(() => {
+                clearInterval(interval);
+                setTimeout(() => {
+                    blessingBtn.disabled = false;
+                }, 1000);
+            }, 96000);
         }
 
         function createRandomBlessing() {
@@ -374,5 +381,4 @@
         blessingBtn.addEventListener('click', startBlessings);
     </script>
 </body>
-
 </html>
