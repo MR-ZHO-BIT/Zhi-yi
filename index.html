@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>致知意：就此别过 💔</title>
+    <title>致知意：愿你欢笑常在 ❤️</title>
     <style>
         * {
             margin: 0;
@@ -249,8 +249,8 @@
             <p class="message">点击下面的按钮，收下这份迟到的告别</p >
             <button class="btn" id="blessingBtn">点击接收告别</button>
             <p class="footer">祝卿安好</p >
-            <!-- 修复后的音频标签（补充闭合标签） -->
-            <audio id="bgMusic" loop preload="auto">
+            <!-- 1. 调整preload为"auto"（强制预加载），增加hidden的音频控件辅助加载 -->
+            <audio id="bgMusic" loop preload="auto" controls style="display: none;">
                 <source src="missyouhani.mp3" type="audio/mpeg">
                 您的浏览器不支持音频播放
            </audio>
@@ -300,24 +300,37 @@
         const bgMusic = document.getElementById('bgMusic');
         const template = document.querySelector('.popup-template');
         let currentMsgIndex = 0;
-        let musicPlayed = false; 
+        let musicLoaded = false; // 标记音乐是否预加载完成
 
-        // 页面加载时进度条动画
+        // 2. 页面加载时主动触发音乐预加载
         window.addEventListener('load', function() {
             const progressBar = document.querySelector('.progress-bar');
             progressBar.classList.add('loaded');
+
+            // 主动加载音频（即使隐藏控件，也会触发预加载）
+            bgMusic.load();
+            // 监听音频加载完成事件
+            bgMusic.addEventListener('canplaythrough', function() {
+                musicLoaded = true;
+                console.log('音乐已预加载完成');
+            });
         });
 
         // 按顺序显示弹窗，每条5秒
         function startBlessings() {
-            // 播放音乐（用户点击后触发，避开自动播放限制）
-            if (!musicPlayed) {
+            // 3. 加载完成后再播放，避免卡顿
+            if (musicLoaded) {
                 bgMusic.play().catch(err => {
                     console.log('音频播放失败：', err);
-                    alert('请确认音乐文件存在，且点击页面后重试~');
-                    return;
+                    alert('请点击页面后重试~');
                 });
-                musicPlayed = true;
+            } else {
+                // 若未加载完成，等待后再尝试播放
+                setTimeout(() => {
+                    bgMusic.play().catch(err => {
+                        alert('音乐加载中，请稍候再试~');
+                    });
+                }, 500);
             }
 
             // 禁用按钮
