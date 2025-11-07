@@ -249,11 +249,11 @@
             <p class="message">点击下面的按钮，收下这份迟到的告别</p >
             <button class="btn" id="blessingBtn">点击接收告别</button>
             <p class="footer">祝卿安好</p >
-            <!-- 音乐元素（相对路径） -->
+            <!-- 修复后的音频标签（补充闭合标签） -->
             <audio id="bgMusic" loop preload="auto">
                 <source src="missyouhani.mp3" type="audio/mpeg">
                 您的浏览器不支持音频播放
-            
+           </audio>
         </div>
     </div>
     
@@ -261,7 +261,6 @@
         <div class="popup-content">
             <div class="decoration" style="top: 10px; left: 15px;">🍂</div>
             <div class="decoration" style="top: 15px; right: 20px;">🌙</div>
-            <!-- 已移除下雨和草的装饰 -->
             
             <div class="popup-title">✨ 周同学的告别信 ✨</div>
             <div class="popup-message"></div>
@@ -311,11 +310,11 @@
 
         // 按顺序显示弹窗，每条5秒
         function startBlessings() {
-            // 播放音乐
+            // 播放音乐（用户点击后触发，避开自动播放限制）
             if (!musicPlayed) {
                 bgMusic.play().catch(err => {
-                    console.log('播放失败，可能需要用户交互：', err);
-                    alert('请点击页面后再尝试接收告别，以便播放音乐~');
+                    console.log('音频播放失败：', err);
+                    alert('请确认音乐文件存在，且点击页面后重试~');
                     return;
                 });
                 musicPlayed = true;
@@ -350,7 +349,7 @@
                 popup.classList.add('active');
             }, 10);
 
-            // 倒计时逻辑（改为5秒）
+            // 倒计时逻辑（5秒）
             let remaining = 5;
             const countdown = popup.querySelector('.popup-countdown');
             const countdownTimer = setInterval(() => {
