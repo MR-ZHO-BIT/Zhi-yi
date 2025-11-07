@@ -149,21 +149,23 @@
             font-family: "KaiTi", sans-serif;
         }
         
+        /* 核心修改：弹窗提亮，提升对比度 */
         .popup-content {
             width: 85%;
             max-width: 380px;
-            background: #e9ecef;
+            background: #ffffff; /* 纯白背景，亮度拉满 */
             border-radius: 20px;
             padding: 25px;
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) translateY(20px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* 浅阴影不压亮 */
             opacity: 0;
             transition: all 0.5s;
             z-index: 1000;
             text-align: center;
+            border: 1px solid #f0f0f0; /* 浅边框增加层次感 */
         }
         
         .popup-content.active {
@@ -172,7 +174,7 @@
         }
         
         .popup-title {
-            color: #6c757d;
+            color: #444444; /* 加深标题颜色，更醒目 */
             font-size: 20px;
             font-weight: bold;
             margin-bottom: 15px;
@@ -180,10 +182,10 @@
         
         .popup-message {
             font-size: 18px;
-            color: #333;
+            color: #2d2d2d; /* 文字加深为深灰色，提升可读性 */
             margin: 20px 0;
             font-family: "KaiTi", sans-serif;
-            line-height: 1.5;
+            line-height: 1.6; /* 行高增加，阅读更舒适 */
         }
         
         .popup-close {
@@ -202,14 +204,14 @@
             position: absolute;
             bottom: 10px;
             right: 15px;
-            color: #888;
+            color: #666666; /* 倒计时文字加深 */
             font-size: 12px;
         }
         
         .decoration {
             position: absolute;
             font-size: 24px;
-            opacity: 0.7;
+            opacity: 0.8; /* 装饰图标提亮 */
             z-index: 0;
         }
         
@@ -249,7 +251,6 @@
             <p class="message">点击下面的按钮，收下这份迟到的告别</p >
             <button class="btn" id="blessingBtn">点击接收告别</button>
             <p class="footer">祝卿安好</p >
-            <!-- 调整preload为"auto"（强制预加载），增加hidden的音频控件辅助加载 -->
             <audio id="bgMusic" loop preload="auto" controls style="display: none;">
                 <source src="missyouhani.mp3" type="audio/mpeg">
                 您的浏览器不支持音频播放
@@ -275,13 +276,13 @@
             "知意，感知你已有了归宿，真心为你高兴 💔",
             "重新认识一下，我叫周文涛，就是认识的有点迟了，你已心有所属了 😭",
             "原来我的喜欢，只是一场恰逢其时的误会",
-            "知意，如果我早点遇到你就好了 😭", // 修复：删除多余的字母k
+            "知意，如果我早点遇到你就好了 😭",
             "愿他真心待你，懂你笑容背后的辛酸 💔",
             "天冷记得添衣，蚊子还会有的得小心 💔",
-            "盖好被子，别再踢被子了，照顾好自己的身体",
+            "盖好被子，别再踢被，照顾好自己的身体",
             "坐车时记得把窗关好，少吹风就少头晕",
             "寝室消毒时，记得把入口的东西收好",
-            "被插队也别一个人生闷气，这样不好",
+            "被插队也被一个人生闷气，这样不好",
             "有月事的领近时期就别吃特辣的和冰的食物忍忍，好吗？",
             "如果胃疼就尽快请假去医院，可不能忍着",
             "谢谢你曾愿意分享生活，我很珍惜那些时光",
@@ -306,69 +307,49 @@
         const bgMusic = document.getElementById('bgMusic');
         const template = document.querySelector('.popup-template');
         let currentMsgIndex = 0;
-        let musicLoaded = false; // 标记音乐是否预加载完成
+        let musicLoaded = false;
 
-        // 页面加载时主动触发音乐预加载
         window.addEventListener('load', function() {
             const progressBar = document.querySelector('.progress-bar');
             progressBar.classList.add('loaded');
-
-            // 主动加载音频（即使隐藏控件，也会触发预加载）
             bgMusic.load();
-            // 监听音频加载完成事件
             bgMusic.addEventListener('canplaythrough', function() {
                 musicLoaded = true;
                 console.log('音乐已预加载完成');
             });
         });
 
-        // 按顺序显示弹窗，每条5秒
         function startBlessings() {
-            // 加载完成后再播放，避免卡顿
             if (musicLoaded) {
                 bgMusic.play().catch(err => {
                     console.log('音频播放失败：', err);
                     alert('请点击页面后重试~');
                 });
             } else {
-                // 若未加载完成，等待后再尝试播放
                 setTimeout(() => {
                     bgMusic.play().catch(err => {
                         alert('音乐加载中，请稍候再试~');
                     });
                 }, 500);
             }
-
-            // 禁用按钮
             blessingBtn.disabled = true;
-            // 重置索引
             currentMsgIndex = 0;
-            // 显示第一条
             showNextMessage();
         }
 
-        // 显示下一条消息
         function showNextMessage() {
             if (currentMsgIndex >= messages.length) {
-                // 所有消息显示完毕，启用按钮
                 blessingBtn.disabled = false;
                 return;
             }
-
-            // 克隆弹窗模板
             const popup = template.querySelector('.popup-content').cloneNode(true);
             document.body.appendChild(popup);
-
-            // 设置当前消息和颜色
             popup.querySelector('.popup-message').textContent = messages[currentMsgIndex];
-            popup.style.backgroundColor = colors[currentMsgIndex % colors.length]; // 循环使用颜色
-
-            // 显示弹窗
+            popup.style.backgroundColor = colors[currentMsgIndex % colors.length];
             setTimeout(() => {
                 popup.classList.add('active');
             }, 10);
 
-            // 倒计时逻辑（5秒）
             let remaining = 5;
             const countdown = popup.querySelector('.popup-countdown');
             const countdownTimer = setInterval(() => {
@@ -376,19 +357,15 @@
                 countdown.textContent = `⏳ ${remaining}秒后继续`;
                 if (remaining <= 0) {
                     clearInterval(countdownTimer);
-                    // 隐藏当前弹窗
                     popup.classList.remove('active');
-                    // 移除弹窗
                     setTimeout(() => {
                         document.body.removeChild(popup);
-                        // 显示下一条
                         currentMsgIndex++;
                         showNextMessage();
                     }, 500);
                 }
             }, 1000);
 
-            // 点击关闭按钮直接下一条
             const closeBtn = popup.querySelector('.popup-close');
             closeBtn.addEventListener('click', () => {
                 clearInterval(countdownTimer);
@@ -401,9 +378,7 @@
             });
         }
 
-        // 按钮点击事件
         blessingBtn.addEventListener('click', startBlessings);
     </script>
 </body>
 </html>
-
