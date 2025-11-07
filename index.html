@@ -261,13 +261,12 @@
         <div class="popup-content">
             <div class="decoration" style="top: 10px; left: 15px;">🍂</div>
             <div class="decoration" style="top: 15px; right: 20px;">🌙</div>
-            <div class="decoration" style="bottom: 40px; left: 20px;">🌧️</div>
-            <div class="decoration" style="bottom: 35px; right: 15px;">🍃</div>
+            <!-- 已移除下雨和草的装饰 -->
             
             <div class="popup-title">✨ 周同学的告别信 ✨</div>
             <div class="popup-message"></div>
             <button class="popup-close">💔 知晓了</button>
-            <div class="popup-countdown">⏳ 4秒后继续</div>
+            <div class="popup-countdown">⏳ 5秒后继续</div>
         </div>
     </div>
 
@@ -310,7 +309,7 @@
             progressBar.classList.add('loaded');
         });
 
-        // 按顺序显示弹窗，每条4秒
+        // 按顺序显示弹窗，每条5秒
         function startBlessings() {
             // 播放音乐
             if (!musicPlayed) {
@@ -351,8 +350,8 @@
                 popup.classList.add('active');
             }, 10);
 
-            // 倒计时逻辑
-            let remaining = 4;
+            // 倒计时逻辑（改为5秒）
+            let remaining = 5;
             const countdown = popup.querySelector('.popup-countdown');
             const countdownTimer = setInterval(() => {
                 remaining--;
