@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>致知意：就此别过 💔</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #e0e5ec, #c9d6df);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 30px;
+            padding: 40px 30px;
+            box-shadow: 0 15px 30px rgba(100, 120, 150, 0.2);
+            text-align: center;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1;
+        }
+        
+        .heart-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        .content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #6c757d;
+            font-size: 28px;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hearts {
+            color: #6c757d;
+            font-size: 24px;
+            margin: 15px 0;
+            letter-spacing: 5px;
+        }
+        
+        .heart-emoji {
+            font-size: 120px;
+            color: #6c757d;
+            margin: 30px 0;
+            text-shadow: 0 5px 10px rgba(100, 120, 150, 0.2);
+            animation: heartbeat 2s infinite;
+            z-index: 2;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            max-width: 300px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+            position: relative;
+            z-index: 2;
+        }
+        .progress-heart {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            left: 0;
+            transition: left 3s linear;
+            font-size: 16px;
+        }
+        .progress-bar.loaded .progress-heart {
+            left: calc(100% - 1em);
+        }
+        
+        .message {
+            font-size: 16px;
+            color: #495057;
+            margin: 15px 0;
+            font-family: "KaiTi", sans-serif;
+        }
+        
+        .btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(100, 120, 150, 0.3);
+            transition: all 0.3s;
+            width: 100%;
+            max-width: 220px;
+            z-index: 2;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+            box-shadow: 0 3px 10px rgba(100, 120, 150, 0.3);
+            background: #868e96;
+        }
+        
+        .btn:disabled {
+            background: #adb5bd;
+            cursor: not-allowed;
+            box-shadow: 0 3px 10px rgba(100, 120, 150, 0.2);
+        }
+        
+        .footer {
+            color: #888;
+            font-size: 12px;
+            margin-top: 15px;
+            font-family: "KaiTi", sans-serif;
+        }
+        
+        .popup-content {
+            width: 85%;
+            max-width: 380px;
+            background: #e9ecef;
+            border-radius: 20px;
+            padding: 25px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) translateY(20px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: all 0.5s;
+            z-index: 1000;
+            text-align: center;
+        }
+        
+        .popup-content.active {
+            opacity: 1;
+            transform: translate(-50%, -50%) translateY(0);
+        }
+        
+        .popup-title {
+            color: #6c757d;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .popup-message {
+            font-size: 18px;
+            color: #333;
+            margin: 20px 0;
+            font-family: "KaiTi", sans-serif;
+            line-height: 1.5;
+        }
+        
+        .popup-close {
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .popup-countdown {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            color: #888;
+            font-size: 12px;
+        }
+        
+        .decoration {
+            position: absolute;
+            font-size: 24px;
+            opacity: 0.7;
+            z-index: 0;
+        }
+        
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+        
+        .floating {
+            animation: float 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="heart-bg">
+            💔💔💔💔💔💔💔💔💔💔
+            💔💔💔💔💔💔💔💔💔💔
+            💔💔💔💔💔💔💔💔💔💔
+            💔💔💔💔💔💔💔💔💔💔
+        </div>
+        
+        <div class="content">
+            <h1>致知意：就此别过 💔</h1>
+            <div class="hearts">💔 💔 💔 💔 💔</div>
+            <div class="heart-emoji floating">💔</div>
+            <div class="progress-bar">
+                <div class="progress-heart">💔</div>
+            </div>
+            <p class="message">点击下面的按钮，收下这份迟到的告别</p >
+            <button class="btn" id="blessingBtn">点击接收告别</button>
+            <p class="footer">祝卿安好</p >
+            <!-- 音乐元素（相对路径） -->
+            <audio id="bgMusic" loop preload="auto">
+                <source src="missyouhani.mp3" type="audio/mpeg">
+                您的浏览器不支持音频播放
+            
+        </div>
+    </div>
+    
+    <div class="popup-template" style="display: none;">
+        <div class="popup-content">
+            <div class="decoration" style="top: 10px; left: 15px;">🍂</div>
+            <div class="decoration" style="top: 15px; right: 20px;">🌙</div>
+            <div class="decoration" style="bottom: 40px; left: 20px;">🌧️</div>
+            <div class="decoration" style="bottom: 35px; right: 15px;">🍃</div>
+            
+            <div class="popup-title">✨ 周同学的告别信 ✨</div>
+            <div class="popup-message"></div>
+            <button class="popup-close">💔 知晓了</button>
+            <div class="popup-countdown">⏳ 4秒后继续</div>
+        </div>
+    </div>
+
+    <script>
+        const messages = [
+            "知意，感知你已有了归宿，真心为你高兴 💔",
+            "重新认识一下，我叫周文涛，就是认识的有点迟了，你已心有所属了 😭",
+            "原来我的喜欢，只是一场恰逢其时的误会",
+            "知意，如果我早点遇到你就好了 😭",
+            "愿他真心待你，懂你笑容背后的辛酸 💔",
+            "天冷记得添衣，蚊子还会有的得小心 💔",
+            "盖好被子，别再踢被，照顾好自己的身体",
+            "坐车时记得靠窗坐，少吹风就少头晕",
+            "寝室消毒时，记得把入口的东西收好",
+            "谢谢你曾愿意分享生活，我很珍惜那些时光",
+            "我的暗恋，止于你的幸福，不打扰是最后的温柔",
+            "人生漫漫，愿你平安喜乐，万事顺意",
+            "你以后也别想不开，好吗，人生短短数十载，今后肯定更精彩 💔",
+            "我会把这份喜欢藏好，祝你与爱人岁岁年年",
+            "我几个哥们也说网恋很难，连心情也这么说过，是我太容易带入自己的情感了，希望没给你造成困扰 😭",
+            "这场无疾而终的暗恋，就以告别收尾吧，许是难知意，何故总相思",
+            "唉，心如秋叶碎满地，泪似长河无尽期 💔"
+        ];
+        const colors = [
+            "#E9ECEF", "#DEE2E6", "#CED4DA", "#ADB5BD", "#6C757D",
+            "#F8F9FA", "#E2E6EA", "#D3D9DF", "#C5CDD4", "#B9C2CA",
+            "#AAB8C2", "#9AA8B4", "#8D99AE", "#8492A6", "#7D8996",
+            "#718096", "#6B7280", "#5C636E", "#4B5563", "#374151"
+        ];
+
+        const blessingBtn = document.getElementById('blessingBtn');
+        const bgMusic = document.getElementById('bgMusic');
+        const template = document.querySelector('.popup-template');
+        let currentMsgIndex = 0;
+        let musicPlayed = false; 
+
+        // 页面加载时进度条动画
+        window.addEventListener('load', function() {
+            const progressBar = document.querySelector('.progress-bar');
+            progressBar.classList.add('loaded');
+        });
+
+        // 按顺序显示弹窗，每条4秒
+        function startBlessings() {
+            // 播放音乐
+            if (!musicPlayed) {
+                bgMusic.play().catch(err => {
+                    console.log('播放失败，可能需要用户交互：', err);
+                    alert('请点击页面后再尝试接收告别，以便播放音乐~');
+                    return;
+                });
+                musicPlayed = true;
+            }
+
+            // 禁用按钮
+            blessingBtn.disabled = true;
+            // 重置索引
+            currentMsgIndex = 0;
+            // 显示第一条
+            showNextMessage();
+        }
+
+        // 显示下一条消息
+        function showNextMessage() {
+            if (currentMsgIndex >= messages.length) {
+                // 所有消息显示完毕，启用按钮
+                blessingBtn.disabled = false;
+                return;
+            }
+
+            // 克隆弹窗模板
+            const popup = template.querySelector('.popup-content').cloneNode(true);
+            document.body.appendChild(popup);
+
+            // 设置当前消息和颜色
+            popup.querySelector('.popup-message').textContent = messages[currentMsgIndex];
+            popup.style.backgroundColor = colors[currentMsgIndex % colors.length]; // 循环使用颜色
+
+            // 显示弹窗
+            setTimeout(() => {
+                popup.classList.add('active');
+            }, 10);
+
+            // 倒计时逻辑
+            let remaining = 4;
+            const countdown = popup.querySelector('.popup-countdown');
+            const countdownTimer = setInterval(() => {
+                remaining--;
+                countdown.textContent = `⏳ ${remaining}秒后继续`;
+                if (remaining <= 0) {
+                    clearInterval(countdownTimer);
+                    // 隐藏当前弹窗
+                    popup.classList.remove('active');
+                    // 移除弹窗
+                    setTimeout(() => {
+                        document.body.removeChild(popup);
+                        // 显示下一条
+                        currentMsgIndex++;
+                        showNextMessage();
+                    }, 500);
+                }
+            }, 1000);
+
+            // 点击关闭按钮直接下一条
+            const closeBtn = popup.querySelector('.popup-close');
+            closeBtn.addEventListener('click', () => {
+                clearInterval(countdownTimer);
+                popup.classList.remove('active');
+                setTimeout(() => {
+                    document.body.removeChild(popup);
+                    currentMsgIndex++;
+                    showNextMessage();
+                }, 500);
+            });
+        }
+
+        // 按钮点击事件
+        blessingBtn.addEventListener('click', startBlessings);
+    </script>
+</body>
+</html>
